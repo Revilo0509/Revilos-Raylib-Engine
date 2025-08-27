@@ -5,53 +5,39 @@ namespace RRE {
 
 // --- Implementation ---
 
-template <typename T>
-void InstanceManager<T>::add(T *instance, unsigned int scene) {
-    // Ensure the scene exists
-    if (scene >= instances.size())
-        instances.resize(scene + 1);
-    instances[scene].push_back(instance);
+template <typename T> void InstanceManager<T>::add(T *instance) {
+    instances.push_back(instance);
 }
 
-template <typename T>
-void InstanceManager<T>::remove(T *instance, unsigned int scene) {
-    if (scene >= instances.size())
-        return; // scene doesn't exist
-    auto &sceneVec = instances[scene];
-    sceneVec.erase(std::remove(sceneVec.begin(), sceneVec.end(), instance),
-                   sceneVec.end());
+template <typename T> void InstanceManager<T>::remove(T *instance) {
+    instances.erase(std::remove(instances.begin(), instances.end(), instance),
+                    instances.end());
 }
 
-template <typename T> void InstanceManager<T>::run(unsigned int scene) {
-    if (scene >= instances.size())
-        return; // scene doesn't exist
-    for (auto instance : instances[scene])
+template <typename T> void InstanceManager<T>::run() {
+    for (auto instance : instances)
         instance->run();
 }
 
 // --- Global handlers for Updatable and Drawable instances ---
 
 static InstanceManager<Updatable> UpdatableManager;
-inline Updatable::Updatable(unsigned int i_scene) : scene(i_scene) {
-    UpdatableManager.add(this, scene);
-}
-
-inline Updatable::~Updatable() { UpdatableManager.remove(this, scene); }
+inline Updatable::Updatable() { UpdatableManager.add(this); }
+inline Updatable::~Updatable() { UpdatableManager.remove(this); }
 
 static InstanceManager<Drawable> DrawableManager;
-inline Drawable::Drawable(unsigned int i_scene) : scene(i_scene) {
-    DrawableManager.add(this, scene);
-}
-
-inline Drawable::~Drawable() { DrawableManager.remove(this, scene); }
+inline Drawable::Drawable() { DrawableManager.add(this); }
+inline Drawable::~Drawable() { DrawableManager.remove(this); }
 
 // --- GamePrototype implementation ---
 
 GamePrototype::GamePrototype(int WINDOW_WIDTH, int WINDOW_HEIGHT,
                              std::string WINDOW_TITLE,
-                             unsigned int i_ConfigFlags) {
+                             unsigned int i_ConfigFlags, int i_monitor) {
     SetConfigFlags(i_ConfigFlags);
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE.c_str());
+    SetWindowMonitor(i_monitor);
+    
 }
 
 GamePrototype::~GamePrototype() { CloseWindow(); }
@@ -63,18 +49,16 @@ void GamePrototype::run() {
         float deltaTime = GetFrameTime();
         accumulator += deltaTime;
 
-        // Fixed-timestep update loop
         while (accumulator >= tickRate) {
             this->update();
-            UpdatableManager.run(scene);
+            UpdatableManager.run();
             accumulator -= tickRate;
         }
 
         BeginDrawing();
         ClearBackground(BLACK);
 
-        // Render all drawables
-        DrawableManager.run(scene);
+        DrawableManager.run();
         this->draw();
 
         EndDrawing();
@@ -84,12 +68,14 @@ void GamePrototype::run() {
 void GamePrototype::draw() {}
 void GamePrototype::update() {}
 
-Object::Object(int x, int y, Texture *i_texture, unsigned int i_scene)
-    : Drawable(i_scene), pos{static_cast<float>(x), static_cast<float>(y)},
+// --- Object implementation ---
+
+Object::Object(int x, int y, Texture *i_texture)
+    : Drawable(), pos{static_cast<float>(x), static_cast<float>(y)},
       texture(i_texture) {}
 
-Object::Object(Vector2 i_pos, Texture *i_texture, unsigned int i_scene)
-    : Drawable(i_scene), pos(i_pos), texture(i_texture) {}
+Object::Object(Vector2 i_pos, Texture *i_texture)
+    : Drawable(), pos(i_pos), texture(i_texture) {}
 
 void Object::draw() { DrawTextureV(*texture, pos, WHITE); }
 

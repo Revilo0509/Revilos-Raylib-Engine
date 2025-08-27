@@ -23,8 +23,17 @@ if(NOT raylib_FOUND)
     FetchContent_MakeAvailable(raylib)
 endif()
 
+FetchContent_Declare(
+    raygui
+    GIT_REPOSITORY https://github.com/raysan5/raygui.git
+    GIT_TAG 4.0
+)
+FetchContent_MakeAvailable(raygui)
+
 # --- Library ---
 add_library(RRE ${SRC_FILES})
+
+target_include_directories(RRE PUBLIC "${raygui_SOURCE_DIR}/src")
 
 target_include_directories(RRE
     PUBLIC
