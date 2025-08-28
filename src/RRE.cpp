@@ -33,10 +33,10 @@ inline Drawable::~Drawable() { DrawableManager.remove(this); }
 
 GamePrototype::GamePrototype(int WINDOW_WIDTH, int WINDOW_HEIGHT,
                              std::string WINDOW_TITLE,
-                             unsigned int i_ConfigFlags, int i_monitor) {
-    SetConfigFlags(i_ConfigFlags);
+                             unsigned int ConfigFlags, int monitor) {
+    SetConfigFlags(ConfigFlags);
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE.c_str());
-    SetWindowMonitor(i_monitor);
+    SetWindowMonitor(monitor);
     
 }
 
@@ -70,12 +70,12 @@ void GamePrototype::update() {}
 
 // --- Object implementation ---
 
-Object::Object(int x, int y, Texture *i_texture)
+Object::Object(int x, int y, Texture *texture)
     : Drawable(), pos{static_cast<float>(x), static_cast<float>(y)},
-      texture(i_texture) {}
+      texture(texture) {}
 
-Object::Object(Vector2 i_pos, Texture *i_texture)
-    : Drawable(), pos(i_pos), texture(i_texture) {}
+Object::Object(Vector2 pos, Texture *texture)
+    : Drawable(), pos(pos), texture(texture) {}
 
 void Object::draw() { DrawTextureV(*texture, pos, WHITE); }
 

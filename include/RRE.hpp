@@ -18,8 +18,8 @@ class GamePrototype {
     GamePrototype(int WINDOW_WIDTH = 1280,
                   int WINDOW_HEIGHT = 720,
                   std::string WINDOW_TITLE = "RRE Default Title",
-                  unsigned int i_ConfigFlags = FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI,
-                  int i_monitor = 0);
+                  unsigned int ConfigFlags = FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI,
+                  int monitor = 0);
     ~GamePrototype();
     void run();            // Main game loop
     virtual void update(); // Logic updated at fixed tick rate
@@ -50,8 +50,8 @@ class Object : public Drawable {
     Texture *texture;
 
   public:
-    Object(int x, int y, Texture *i_texture);
-    Object(Vector2 i_pos, Texture *i_texture);
+    Object(int x, int y, Texture *texture);
+    Object(Vector2 pos, Texture *texture);
     void draw() override;
 };
 
