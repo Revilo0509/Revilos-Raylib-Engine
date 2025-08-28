@@ -10,15 +10,36 @@
 
 namespace RRE {
 
+class STexture {
+  public:
+    STexture();
+    explicit STexture(const std::string &filename);
+    explicit STexture(const Image &image);
+    ~STexture();
+
+    STexture(const STexture &other) = delete;
+    STexture &operator=(const STexture &other) = delete;
+
+    STexture(STexture &&other) noexcept;
+    STexture &operator=(STexture &&other) noexcept;
+
+    operator Texture() const;
+    Texture get() const;
+
+  private:
+    Texture tex{0};
+    void unload();
+};
+
 class GamePrototype {
   public:
     float tickRate = 1.0f / 128.0f;
 
   public:
-    GamePrototype(int WINDOW_WIDTH = 1280,
-                  int WINDOW_HEIGHT = 720,
+    GamePrototype(int WINDOW_WIDTH = 1280, int WINDOW_HEIGHT = 720,
                   std::string WINDOW_TITLE = "RRE Default Title",
-                  unsigned int ConfigFlags = FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI,
+                  unsigned int ConfigFlags = FLAG_VSYNC_HINT |
+                                             FLAG_WINDOW_HIGHDPI,
                   int monitor = 0);
     ~GamePrototype();
     void run();            // Main game loop
@@ -47,11 +68,12 @@ class Drawable {
 class Object : public Drawable {
   public:
     Vector2 pos;
-    Texture *texture;
+    STexture *texture;
 
   public:
-    Object(int x, int y, Texture *texture);
-    Object(Vector2 pos, Texture *texture);
+    Object(Vector2 pos, STexture *texture);
+    Object(int x, int y, STexture *texture);
+    Object(float x, float y, STexture *texture);
     void draw() override;
 };
 
@@ -60,10 +82,29 @@ template <typename T> class InstanceManager {
   public:
     void add(T *instance);
     void remove(T *instance);
-    void run();
+    virtual void run();
 
-  private:
+  protected:
     std::vector<T *> instances;
 };
+
+// Specialized InstanceManagers
+class UpdatableManager : public InstanceManager<Updatable> {
+  public:
+    void run() override;
+};
+class DrawableManager : public InstanceManager<Drawable> {
+  public:
+    void run() override;
+};
+
+using Velocity = Vector2;
+
+namespace Funcs {
+
+Velocity getTopDownPlayerMovement();
+Velocity getSidePlayerMovement();
+
+} // namespace Funcs
 
 } // namespace RRE
