@@ -34,6 +34,7 @@ class STexture {
 class GamePrototype {
   public:
     float tickRate = 1.0f / 128.0f;
+    Color backgroundColor = BLACK;
 
   public:
     GamePrototype(int WINDOW_WIDTH = 1280, int WINDOW_HEIGHT = 720,
@@ -42,9 +43,15 @@ class GamePrototype {
                                              FLAG_WINDOW_HIGHDPI,
                   int monitor = 0);
     ~GamePrototype();
+    
+    void setBackgroundColor(Color color);
+
     void run();            // Main game loop
     virtual void update(); // Logic updated at fixed tick rate
     virtual void draw();   // Rendering runs as fast as possible
+
+    virtual void postUpdate(); // Runs once after all updates are done
+    virtual void preDraw();    // Runs right after CLEARBACKGROUND() is called
 };
 
 class Updatable {

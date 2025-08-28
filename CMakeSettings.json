@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "name": "x86-Debug",
+      "generator": "Ninja",
+      "buildRoot": "${workspaceFolder}/build/${name}",
+      "installRoot": "${workspaceFolder}/install/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [],
+      "runWorkingDirectory": "${workspaceFolder}/build/bin/examples"
+    }
+  ]
+}

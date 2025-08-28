@@ -48,5 +48,6 @@ target_link_libraries(RRE PUBLIC raylib)
 option(BUILD_EXAMPLES "Build example programs" OFF)
 
 if(BUILD_EXAMPLES)
+    set(EXAMPLE_RESOURCES "${CMAKE_SOURCE_DIR}/examples/resources")
     add_subdirectory(examples)
 endif()

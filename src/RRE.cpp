@@ -88,6 +88,10 @@ GamePrototype::GamePrototype(int WINDOW_WIDTH, int WINDOW_HEIGHT,
 
 GamePrototype::~GamePrototype() { CloseWindow(); }
 
+void GamePrototype::setBackgroundColor(Color color) {
+    backgroundColor = color;
+};
+
 void GamePrototype::run() {
     float accumulator = 0.0f;
 
@@ -113,6 +117,9 @@ void GamePrototype::run() {
 
 void GamePrototype::draw() {}
 void GamePrototype::update() {}
+
+void GamePrototype::postUpdate() {};
+void GamePrototype::preDraw() {};
 
 // --- Object implementation ---
 
