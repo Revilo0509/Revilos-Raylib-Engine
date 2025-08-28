@@ -3,10 +3,10 @@
 using namespace RRE;
 
 int main() {
-    GamePrototype game("[RRE] Simple Draw Example");
+    GamePrototype game("[RRE] Simple Player Example");
 
     STexture t_maja("./resources/maja_nobg_small.png");
-    Object maja(200, 100, &t_maja);
+    PlayerPrototype maja_red(200, 100, &t_maja);
 
     game.run();
 }

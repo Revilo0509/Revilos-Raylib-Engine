@@ -30,8 +30,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raygui)
 
-# --- Library ---
-add_library(RRE ${SRC_FILES})
+# --- Library (DLL) ---
+add_library(RRE SHARED ${SRC_FILES})
 
 target_include_directories(RRE PUBLIC "${raygui_SOURCE_DIR}/src")
 
@@ -43,6 +43,11 @@ target_include_directories(RRE
 )
 
 target_link_libraries(RRE PUBLIC raylib)
+
+# --- Export Symbols for Windows ---
+if(WIN32)
+    target_compile_definitions(RRE PRIVATE RRE_EXPORTS)
+endif()
 
 # --- Examples (optional) ---
 option(BUILD_EXAMPLES "Build example programs" OFF)

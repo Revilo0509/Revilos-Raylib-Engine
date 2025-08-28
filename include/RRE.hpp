@@ -1,8 +1,9 @@
 #pragma once
 
-#include "raylib.h"
 #include <string>
 #include <vector>
+
+#include "raylib.h"
 
 #ifdef RRE_GUI
 #include "RRE_GUI.hpp"
@@ -14,7 +15,11 @@ class STexture {
   public:
     STexture();
     explicit STexture(const std::string &filename);
-    explicit STexture(const Image &image);
+    explicit STexture(Image &image);
+
+    STexture(const Texture &texture);
+    STexture(Texture &&texture) noexcept;
+
     ~STexture();
 
     STexture(const STexture &other) = delete;
@@ -42,8 +47,9 @@ class GamePrototype {
                   unsigned int ConfigFlags = FLAG_VSYNC_HINT |
                                              FLAG_WINDOW_HIGHDPI,
                   int monitor = 0);
+    GamePrototype(std::string WINDOW_TITLE);
     ~GamePrototype();
-    
+
     void setBackgroundColor(Color color);
 
     void run();            // Main game loop
@@ -84,6 +90,16 @@ class Object : public Drawable {
     void draw() override;
 };
 
+class PlayerPrototype : public Object, Updatable {
+  public:
+    float speed = 3.0f;
+
+  public:
+    using Object::Object;
+
+    void update() override;
+};
+
 // Generic manager for instances
 template <typename T> class InstanceManager {
   public:
@@ -111,6 +127,11 @@ namespace Funcs {
 
 Velocity getTopDownPlayerMovement();
 Velocity getSidePlayerMovement();
+
+std::vector<Vector2>
+bresenhamLine(Vector2 start, Vector2 end, int mapWidth,
+              int mapHeight); // Returns a list of all intersected points within
+                              // the mapBounds
 
 } // namespace Funcs
 

@@ -1,4 +1,3 @@
-# Only define executables if BUILD_EXAMPLES is ON
 if(NOT BUILD_EXAMPLES)
     return()
 endif()
@@ -29,4 +28,14 @@ foreach(EXAMPLE ${EXAMPLE_SOURCES})
 
     # Make each example depend on the resource copy target
     add_dependencies(${EXAMPLE_NAME} copy_example_resources)
+
+    # Copy the DLL to the same folder as the executable
+    if(WIN32)
+        add_custom_command(TARGET ${EXAMPLE_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:RRE>
+            $<TARGET_FILE_DIR:${EXAMPLE_NAME}>
+            COMMENT "Copying RRE DLL to example output directory"
+        )
+    endif()
 endforeach()

@@ -1,6 +1,9 @@
 #include "RRE.hpp"
+
 #include <algorithm>
 #include <cmath>
+
+#include "raymath.h"
 
 namespace RRE {
 
@@ -10,7 +13,10 @@ STexture::STexture(const std::string &filename) {
     tex = LoadTexture(filename.c_str());
 }
 
-STexture::STexture(const Image &image) { tex = LoadTextureFromImage(image); }
+STexture::STexture(Image &image) { tex = LoadTextureFromImage(image); }
+
+STexture::STexture(const Texture &texture) : tex(texture) {}
+STexture::STexture(Texture &&texture) noexcept : tex(texture) {}
 
 STexture::~STexture() { unload(); }
 
@@ -86,6 +92,12 @@ GamePrototype::GamePrototype(int WINDOW_WIDTH, int WINDOW_HEIGHT,
     SetWindowMonitor(monitor);
 }
 
+GamePrototype::GamePrototype(std::string WINDOW_TITLE) {
+    SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+    InitWindow(1280, 720, WINDOW_TITLE.c_str());
+    SetWindowMonitor(0);
+}
+
 GamePrototype::~GamePrototype() { CloseWindow(); }
 
 void GamePrototype::setBackgroundColor(Color color) {
@@ -131,10 +143,31 @@ Object::Object(int x, int y, STexture *texture)
       texture(texture) {}
 
 Object::Object(float x, float y, STexture *texture)
-    : Drawable(), pos{x, y},
-      texture(texture) {}
+    : Drawable(), pos{x, y}, texture(texture) {}
 
 void Object::draw() { DrawTextureV(*texture, pos, WHITE); }
+
+void PlayerPrototype::update() {
+    Vector2 movement{0.0f, 0.0f};
+
+    movement = Funcs::getTopDownPlayerMovement();
+    movement.x *= speed;
+    movement.y *= speed;
+
+    pos.x += movement.x;
+    pos.y += movement.y;
+
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    Vector2 min{0.0f, 0.0f};
+    Vector2 max{
+        static_cast<float>(screenWidth) - texture->get().width,
+        static_cast<float>(screenHeight) - texture->get().height //TODO: Fix ts
+    };
+
+    pos = Vector2Clamp(pos, min, max);
+}
 
 namespace Funcs {
 
@@ -176,6 +209,45 @@ Velocity getSidePlayerMovement() {
     }
 
     return vel;
+}
+
+std::vector<Vector2> bresenhamLine(Vector2 start, Vector2 end, int mapWidth,
+                                   int mapHeight) {
+    std::vector<Vector2> points;
+
+    int x0 = static_cast<int>(start.x);
+    int y0 = static_cast<int>(start.y);
+    int x1 = static_cast<int>(end.x);
+    int y1 = static_cast<int>(end.y);
+
+    int dx = abs(x1 - x0);
+    int dy = abs(y1 - y0);
+
+    int sx = (x0 < x1) ? 1 : -1;
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx - dy;
+
+    while (true) {
+        // Add point only if it is inside the map bounds
+        if (x0 >= 0 && x0 < mapWidth && y0 >= 0 && y0 < mapHeight) {
+            points.push_back({static_cast<float>(x0), static_cast<float>(y0)});
+        }
+
+        if (x0 == x1 && y0 == y1)
+            break;
+
+        int e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x0 += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y0 += sy;
+        }
+    }
+
+    return points;
 }
 
 } // namespace Funcs
