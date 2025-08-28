@@ -69,12 +69,12 @@ void UpdatableManager::run() {
 // --- Global handlers for Updatable and Drawable instances ---
 
 static UpdatableManager updatableManager;
-inline Updatable::Updatable() { updatableManager.add(this); }
-inline Updatable::~Updatable() { updatableManager.remove(this); }
+Updatable::Updatable() { updatableManager.add(this); }
+Updatable::~Updatable() { updatableManager.remove(this); }
 
 static DrawableManager drawableManager;
-inline Drawable::Drawable() { drawableManager.add(this); }
-inline Drawable::~Drawable() { drawableManager.remove(this); }
+Drawable::Drawable() { drawableManager.add(this); }
+Drawable::~Drawable() { drawableManager.remove(this); }
 
 // --- GamePrototype implementation ---
 
@@ -134,13 +134,13 @@ namespace Funcs {
 Velocity getTopDownPlayerMovement() {
     Velocity vel{0, 0};
 
-    if (IsKeyPressed(KEY_W))
+    if (IsKeyDown(KEY_W))
         vel.y -= 1;
-    if (IsKeyPressed(KEY_S))
+    if (IsKeyDown(KEY_S))
         vel.y += 1;
-    if (IsKeyPressed(KEY_A))
+    if (IsKeyDown(KEY_A))
         vel.x -= 1;
-    if (IsKeyPressed(KEY_D))
+    if (IsKeyDown(KEY_D))
         vel.x += 1;
 
     float length = std::sqrt(vel.x * vel.x + vel.y * vel.y);
@@ -155,16 +155,16 @@ Velocity getTopDownPlayerMovement() {
 Velocity getSidePlayerMovement() {
     Velocity vel{0, 0};
 
-    if (IsKeyPressed(KEY_A))
+    if (IsKeyDown(KEY_A))
         vel.x -= 1;
-    if (IsKeyPressed(KEY_D))
+    if (IsKeyDown(KEY_D))
         vel.x += 1;
 
     if (vel.x != 0) {
         vel.x = (vel.x > 0) ? 1 : -1;
     }
 
-    if (IsKeyPressed(KEY_SPACE)) {
+    if (IsKeyDown(KEY_SPACE)) {
         vel.y = -1;
     }
 

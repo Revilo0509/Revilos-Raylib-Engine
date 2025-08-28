@@ -1,28 +1,22 @@
 #include "RRE.hpp"
 #include "raymath.h"
 
-#include "./gui_layout_name.h"
-
 using namespace RRE;
 
 class Game : public GamePrototype {
-  private:
-    const int cooldown = 20;
-    int cooldownTimer = 0;
-
   public:
     void draw() override { DrawFPS(10, 10); }
-    void update() override { cooldownTimer -= 1; }
 };
 
 class Player : public Object, Updatable {
   public:
-    Player(float x, float y, STexture* texture) : Object(x, y, texture) {}
+    using Object::Object;
 
     void update() {
         pos += Funcs::getTopDownPlayerMovement();
     }
 };
+
 
 int main() {
     Game game;
